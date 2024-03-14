@@ -1,0 +1,14 @@
+# clone and build homebrewery-cli
+FROM node:21-alpine3.17 as build
+
+WORKDIR /app
+
+RUN apk update \
+    && apk add git \
+    && apk add npm \
+    && apk add bash
+
+RUN git clone -b experimentalCommandLineBrewProcess https://github.com/G-Ambatte/homebrewery/ \
+    && cd homebrewery \
+    && npm install
+
