@@ -1,0 +1,11 @@
+#Directories used for testing
+models/
+homebrewery/
+exllamav2/
+output/
+
+#Test and backup Docker files
+Dockerfile -node
+Dockerfile copy
+Dockerfile Master copy
+
