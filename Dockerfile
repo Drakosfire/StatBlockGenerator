@@ -26,20 +26,6 @@ RUN apt-get update \
     && node --version \
     && nvm --version  
 
-# Set the working directory and copy your Node.js project files into it
-#WORKDIR /homebrewery
-#RUN git clone -b experimentalCommandLineBrewProcess https://github.com/G-Ambatte/homebrewery.git .
-
-
-# Install the Node.js dependencies
-#RUN npm install
-
-# Print installed Node packages
-#RUN npm list
-#RUN pwd
-#RUN find / -name homebrewery -type d
-
-# Stage 2: Python environment setup
 FROM ubuntu:22.04 as python-env
 
 # Install Python and dependencies
