@@ -25,7 +25,7 @@ from exllamav2.generator import (
 
 # Declare globals
 device = "cuda:0"
-model_directory =  "/home/user/app/models/Speechless-Llama2-Hermes-Orca-Platypus-WizardLM-13B-GPTQ"
+model_directory =  "./models/Speechless-Llama2-Hermes-Orca-Platypus-WizardLM-13B-GPTQ"
 prompt_list = []
 sd_input = []
 

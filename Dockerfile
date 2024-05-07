@@ -58,6 +58,7 @@ ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 #Copy Homebrewery css dependencies
 COPY dependencies /home/user/app
 
+
 # Set working directory and user
 WORKDIR /home/user/app
 
