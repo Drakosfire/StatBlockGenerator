@@ -436,17 +436,20 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                 outputs= html
                 )
     
-        
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where the script is located
+    print(f"Base Directory :",base_dir)
+    list_of_static_dir = [os.path.join(base_dir, "output"), 
+                        os.path.join(base_dir, "dependencies")] 
+    gr.set_static_paths(paths=list_of_static_dir)
+    
+    
+    if __name__ == "__main__":
+        demo.launch(allowed_paths=list_of_static_dir)      
         
         
         
 
-def main() -> None:
-  # run web server, expose port 8000, share to create web link, give app access folder path, gradio was updated for security and can no longer serve any directory not specified.
-  if __name__ == '__main__':
-    demo.launch(server_name = "0.0.0.0", server_port = 8000, share = False, allowed_paths = ["/media/drakosfire/Shared/Docker/StatblockGenerator/output","/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies"])
-  
-main()
+
 
 
 
