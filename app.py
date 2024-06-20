@@ -146,7 +146,12 @@ with gr.Blocks(css = "style.css") as demo:
                 mon_description, mon_description,
                 mon_sd_prompt,mon_sd_prompt 
                 ]
-
+    #Function to dynamically render textbox if it has text.                
+    def update_visibility(textbox):        
+        if not textbox:
+            return gr.update(visible=False)
+        return gr.update(visible=True)
+    
     
     # Called on user selecting an image from the gallery, outputs the path of the image
     def assign_img_path(evt: gr.SelectData):          
@@ -277,19 +282,20 @@ with gr.Blocks(css = "style.css") as demo:
             </div>""")
     
     markdown_instructions = """## How It Works
-This tool is a fun way to quickly generate Dungeons and Dragons monster manual style statblocks with art and a token for a Virtual Table Top.
-1. Your intitial text along with the prompt is sent to Llama 3 70b to generate all the values for a Dungeons and Dragons creature.
-    a. Include as much or as little information as you'd like.
-    b. Just a name : The Flavor Lich
-    c. A bit of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich
-    d. Lots of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich, the Lich is Challenge Rating 8 and is a 4th level spell caster whose spells are all about food.
-2. The results will populate below in editable fields that are saved on edit. 
-3. Review the results, make any changes you'd like.
-## The first image generation take about 2 minutes for model to 'cold boot' after that it's ~10s per image.
-**Image and Text Generation**: Now you can generate 4 images for the statblock page without text and pick your favorite.
-4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use.
-5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF.
-6. Last, you can generate a Virtual Tabletop token or figure of your creature.
+This tool is a fun way to quickly generate Dungeons and Dragons monster manual style statblocks with art and a token for a Virtual Table Top. \n
+1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
+    a. Include as much or as little information as you'd like. \n
+    b. Just a name : The Flavor Lich \n
+    c. A bit of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich \n
+    d. Lots of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich, the Lich is Challenge Rating 8 and is a 4th level spell caster whose spells are all about food. \n
+2. The results will populate below in editable fields that are saved on edit. \n
+3. Review the results, make any changes you'd like. \n
+## The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image. \n
+\n
+**Image and Text Generation**: Now you can generate 4 images for the statblock page without text and pick your favorite. \n
+4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
+5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
+6. Last, you can generate a token or figure of your creature or a 3d model to download. \n
  """
 
     gr.Markdown(markdown_instructions)
@@ -324,20 +330,44 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                 mon_type_output = gr.Textbox(label = 'Type', lines = 1, interactive=True)
                 mon_speed_output = gr.Textbox(label = 'Speed', lines = 1, interactive=True)
                 mon_abilities_output = gr.Textbox(label ='Ability Scores', lines = 5, interactive=True)
-                mon_damage_resistance_output = gr.Textbox(label = 'Damage Resistance', lines = 1, interactive=True)
+                mon_damage_resistance_output = gr.Textbox(label = 'Damage Resistance', lines = 1, interactive=True, visible=False)
+                mon_damage_resistance_output.change(fn=update_visibility,
+                                                    inputs=[mon_damage_resistance_output],
+                                                    outputs=[mon_damage_resistance_output])
                 mon_challenge_rating_output = gr.Textbox(label = 'Challenge Rating', lines = 1, interactive=True)
-                mon_cantrips_output = gr.Textbox(label = 'Cantrips', lines = 16, interactive=True)
-                mon_spells_output = gr.Textbox(label = 'Spells', lines = 16, interactive=True)
-                mon_spell_slot_output = gr.Textbox(label = 'Spell Slots', lines = 8, interactive=True)
+                mon_cantrips_output = gr.Textbox(label = 'Cantrips', lines = 16, interactive=True, visible=False)
+                mon_cantrips_output.change(fn=update_visibility,
+                                           inputs=[mon_cantrips_output],
+                                           outputs=[mon_cantrips_output])
+                mon_spells_output = gr.Textbox(label = 'Spells', lines = 16, interactive=True, visible=False)
+                mon_spells_output.change(fn=update_visibility,
+                                         inputs=[mon_spells_output],
+                                         outputs=[mon_spells_output])
+                mon_spell_slot_output = gr.Textbox(label = 'Spell Slots', lines = 8, interactive=True, visible=False)
+                mon_spell_slot_output.change(fn=update_visibility,
+                                             inputs=[mon_spell_slot_output],
+                                             outputs=[mon_spell_slot_output])
 
             with gr.Column(scale = 1):
-                mon_subtype_output = gr.Textbox(label = 'Subtype', lines = 1, interactive=True)                
+                mon_subtype_output = gr.Textbox(label = 'Subtype', lines = 1, interactive=True, visible = False)
+                mon_subtype_output.change(fn=update_visibility,
+                                          inputs=[mon_subtype_output],
+                                          outputs=[mon_subtype_output])                
                 mon_saving_throws_output = gr.Textbox(label = 'Saving Throws', lines = 1, interactive=True)
                 mon_skills_output = gr.Textbox(label = 'Skills', lines = 1, interactive=True)
                 mon_hp_output = gr.Textbox(label = 'Health Points', lines = 1, interactive=True)
                 mon_languages_output = gr.Textbox(label = 'Languages', lines = 1, interactive=True)
                 mon_xp_output = gr.Textbox(label = 'XP', lines = 1, interactive=True)
-                mon_legendary_actions_output = gr.Textbox(label = 'Legendary Actions', lines = 16, interactive=True) 
+                mon_legendary_actions_output = gr.Textbox(label = 'Legendary Actions', lines = 16, interactive=True, visible = False) 
+                mon_legendary_actions_output.change(fn = update_visibility,
+                   inputs =[mon_legendary_actions_output],
+                   outputs=[mon_legendary_actions_output])
+            
+                
+                
+            
+            
+    
 
         mon_sd_prompt_output = gr.Textbox(label = 'Image Generation Prompt', lines = 1, interactive=True)
 
@@ -348,7 +378,8 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                                         show_label = True,
                                         elem_id = "gallery",
                                         columns =[4], rows =[1],
-                                        object_fit = "contain", height ="auto")
+                                        object_fit = "cover",
+                                        height ="auto")
               
             with gr.Column(): 
                 token_gen = gr.Button(value = "Generate Token Image" ) 
@@ -356,10 +387,20 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                                         show_label = True,
                                         elem_id = "token_gallery",
                                         columns =[4], rows =[1],
-                                        object_fit = "contain", height ="auto")
-                model_gen = gr.Button(value= "Generate a 3D model")
-                mon_model_gallery = gr.Model3D(label = "3D Model Display",
-                                              elem_id = "model_gallery",
+                                        object_fit = "cover",
+                                        height ="auto")
+        model_gen_instructions = """## Generate a 3d model 
+Create a 3d model with texture using your selected image from the Generated Images Gallery \n
+1. Select your favorite image. 
+*Works best with images without thin qualities, like antenna \n
+2. Click Generate a 3d model button. 
+3. Wait about 30 seconds, then review and download as an .glb file.
+ """
+
+        gr.Markdown(model_gen_instructions)
+        model_gen = gr.Button(value= "Generate a 3D model")
+        mon_model_gallery = gr.Model3D(label = "3D Model Display",
+                                        elem_id = "model_gallery",
                                               )
 
                     
@@ -401,10 +442,11 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                                 mon_sd_prompt,mon_sd_prompt_output 
                                 
                                 ])
+    
    
         
     # Build buttons to modify to html and show html 
-    gen_html = gr.Button(value = "Step 8 : Generate html, click once then go to Step 9")
+    gen_html = gr.Button(value = "Step 3 : Generate html")
     html = gr.HTML(label="HTML preview", show_label=True)
     gen_html.click(build_html_file,inputs =[
                 mon_name_output, 
