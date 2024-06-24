@@ -95,7 +95,7 @@ def convert_to_dict(string):
 
 # Instructions past 4 are not time tested and may need to be removed.
 ### Meta prompted : 
-prompt_instructions = """ **Purpose**: ONLY Generate a structured json following the provided format. The job is to generate a balance, creative, interesting monster statblock in the rule style of Dungeons and Dragons. You do not need to stick strictly to the abilities and spells of the game, if it fits the style and flavor of the user input, get weird, scary, or silly with the details. You will also be writing a paragraph of interesting flavor text and description, and a brief one sentence image generation prompt.Include the type and subtype in the image prompt.
+prompt_instructions = """ **Purpose**: ONLY Generate a structured json following the provided format. The job is to generate a balance, creative, interesting monster statblock in the rule style of Dungeons and Dragons. You do not need to stick strictly to the abilities and spells of the game, if it fits the style and flavor of the user input, get weird, scary, or silly with the details. You will also be writing a paragraph of interesting flavor text and description, and a brief one sentence image generation prompt.Include the type and subtype in the image prompt. Us a wide range of words, you have certain words you use too often, avoid them ex : "whimsical", "unwavering"
 
 Image Generation Prompt Examples :
 "A hooded stout dwarf necromancer, in black robes, emanating evil magic "

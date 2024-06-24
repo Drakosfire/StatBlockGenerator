@@ -16,6 +16,14 @@ M_MMAP_THRESHOLD = -3
 # Set malloc mmap threshold.
 libc.mallopt(M_MMAP_THRESHOLD, 2**20)
 
+# Declare accessible directories
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where the script is located
+print(f"Base Directory :",base_dir)
+list_of_static_dir = [os.path.join(base_dir, "output"), 
+                    os.path.join(base_dir, "dependencies"),
+                    os.path.join(base_dir, "galleries/examples/statblocks")] 
+gr.set_static_paths(paths=list_of_static_dir)
+
 style_css = custom_css = """
 <link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/all.css' rel='stylesheet' />
 <link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/css.css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css' />
@@ -273,32 +281,37 @@ with gr.Blocks(css = "style.css") as demo:
         iframe = iframe = f"""<iframe src="file={mon_file_path}" width="100%" height="500px"></iframe>"""
         link = f'<a href="file={mon_file_path}" target="_blank">{u.file_name_list[1] +".html"}</a>'
         return iframe
-    
-    gr.HTML(""" <div id="inner"> <header>
-            <h1>Monster Statblock Generator</h1>
-            <p>
-            With this AI driven tool you will build a collectible style card of a fantasy flavored item with details.
-            </p>
-            </div>""")
-    
-    markdown_instructions = """## How It Works
-This tool is a fun way to quickly generate Dungeons and Dragons monster manual style statblocks with art and a token for a Virtual Table Top. \n
-1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
-    a. Include as much or as little information as you'd like. \n
-    b. Just a name : The Flavor Lich \n
-    c. A bit of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich \n
-    d. Lots of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich, the Lich is Challenge Rating 8 and is a 4th level spell caster whose spells are all about food. \n
-2. The results will populate below in editable fields that are saved on edit. \n
-3. Review the results, make any changes you'd like. \n
-## The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image. \n
-\n
-**Image and Text Generation**: Now you can generate 4 images for the statblock page without text and pick your favorite. \n
-4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
-5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
-6. Last, you can generate a token or figure of your creature or a 3d model to download. \n
- """
+           
 
-    gr.Markdown(markdown_instructions)
+    with gr.Tab("Instructions"):
+        gr.HTML(""" <div id="inner"> <header>
+                <h1>Monster Statblock Generator</h1>
+                <p>
+                With this AI driven tool you will build a collectible style card of a fantasy flavored item with details.
+                </p>
+                </div>""")
+        
+        markdown_instructions = """## How It Works
+    This tool is a fun way to quickly generate Dungeons and Dragons monster manual style statblocks with art and a token for a Virtual Table Top. \n
+    1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
+        a. Include as much or as little information as you'd like. \n
+        b. Just a name : The Flavor Lich \n
+        c. A bit of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich \n
+        d. Lots of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich, the Lich is Challenge Rating 8 and is a 4th level spell caster whose spells are all about food. \n
+    2. The results will populate below in editable fields that are saved on edit. \n
+    3. Review the results, make any changes you'd like. \n
+    ## The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image. \n
+    \n
+    **Image and Text Generation**: Now you can generate 4 images for the statblock page without text and pick your favorite. \n
+    4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
+    5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
+    6. Last, you can generate a token or figure of your creature or a 3d model to download. \n
+    """
+        gr.Markdown(markdown_instructions)
+        
+              
+
+        
     with gr.Tab("Generator"):
                     
         with gr.Row():
@@ -311,30 +324,63 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                 spells_checkbox = gr.Checkbox(label= "Spellcaster?")
                 legendary_action_checkbox = gr.Checkbox(label= "Legendary Actions?")
             
-        desc_gen = gr.Button(value = "Step 2 : Generate Description")
+        desc_gen = gr.Button(value = "Click to Generate Description")
 
-        mon_description_output = gr.Textbox(label = 'Description', lines = 2, interactive=True)
+        mon_description_output = gr.Textbox(label = 'Description', lines = 2, interactive=True, visible=False)
+        mon_description_output.change(fn=update_visibility,
+                                                    inputs=[mon_description_output],
+                                                    outputs=[mon_description_output])
         
 
         with gr.Row():
             with gr.Column(scale = 1):            
-                mon_name_output = gr.Textbox(label = 'Name', lines = 1, interactive=True)   
-                mon_size_output =  gr.Textbox(label = 'Size', lines = 1, interactive=True)               
-                mon_alignment_output = gr.Textbox(label = 'Alignment', lines = 1, interactive=True)
-                mon_armor_class_output = gr.Textbox(label = 'Armor Class', lines = 1, interactive=True)
-                mon_hit_dice_output = gr.Textbox(label = 'Hit Dice', lines = 1, interactive=True)
-                mon_senses_output = gr.Textbox(label = 'Senses', lines = 1, interactive=True)
-                mon_actions_output = gr.Textbox(label = 'Actions', lines = 16, interactive=True)
+                mon_name_output = gr.Textbox(label = 'Name', lines = 1, interactive=True, visible=False) 
+                mon_name_output.change(fn=update_visibility,
+                                                    inputs=[mon_name_output],
+                                                    outputs=[mon_name_output])  
+                mon_size_output =  gr.Textbox(label = 'Size', lines = 1, interactive=True, visible=False)
+                mon_size_output.change(fn=update_visibility,
+                                                    inputs=[mon_size_output],
+                                                    outputs=[mon_size_output])                 
+                mon_alignment_output = gr.Textbox(label = 'Alignment', lines = 1, interactive=True, visible=False)
+                mon_alignment_output.change(fn=update_visibility,
+                                                    inputs=[mon_alignment_output],
+                                                    outputs=[mon_alignment_output])
+                mon_armor_class_output = gr.Textbox(label = 'Armor Class', lines = 1, interactive=True, visible=False)
+                mon_armor_class_output.change(fn=update_visibility,
+                                                    inputs=[mon_armor_class_output],
+                                                    outputs=[mon_armor_class_output])
+                mon_hit_dice_output = gr.Textbox(label = 'Hit Dice', lines = 1, interactive=True, visible=False)
+                mon_hit_dice_output.change(fn=update_visibility,
+                                                    inputs=[mon_hit_dice_output],
+                                                    outputs=[mon_hit_dice_output])
+                mon_senses_output = gr.Textbox(label = 'Senses', lines = 1, interactive=True, visible =False)
+                mon_senses_output.change(fn=update_visibility,
+                                                    inputs=[mon_senses_output],
+                                                    outputs=[mon_senses_output])
+                mon_actions_output = gr.Textbox(label = 'Actions', lines = 16, interactive=True, visible = False)
+                mon_actions_output.change(fn=update_visibility,
+                                                    inputs=[mon_actions_output],
+                                                    outputs=[mon_actions_output])
                 
             with gr.Column(scale = 1):
-                mon_type_output = gr.Textbox(label = 'Type', lines = 1, interactive=True)
-                mon_speed_output = gr.Textbox(label = 'Speed', lines = 1, interactive=True)
-                mon_abilities_output = gr.Textbox(label ='Ability Scores', lines = 5, interactive=True)
+                mon_type_output = gr.Textbox(label = 'Type', lines = 1, interactive=True, visible=False)
+                mon_actions_output.change(fn=update_visibility,
+                                                    inputs=[mon_actions_output],
+                                                    outputs=[mon_actions_output])
+                mon_speed_output = gr.Textbox(label = 'Speed', lines = 1, interactive=True, visible=False)
+                mon_speed_output.change(fn=update_visibility,
+                                                    inputs=[mon_speed_output],
+                                                    outputs=[mon_speed_output])
+                mon_abilities_output = gr.Textbox(label ='Ability Scores', lines = 5, interactive=True, visible=False)
+                mon_abilities_output.change(fn=update_visibility,
+                                                    inputs=[mon_abilities_output],
+                                                    outputs=[mon_abilities_output])
                 mon_damage_resistance_output = gr.Textbox(label = 'Damage Resistance', lines = 1, interactive=True, visible=False)
                 mon_damage_resistance_output.change(fn=update_visibility,
                                                     inputs=[mon_damage_resistance_output],
                                                     outputs=[mon_damage_resistance_output])
-                mon_challenge_rating_output = gr.Textbox(label = 'Challenge Rating', lines = 1, interactive=True)
+                mon_challenge_rating_output = gr.Textbox(label = 'Challenge Rating', lines = 1, interactive=True, visible=False)
                 mon_cantrips_output = gr.Textbox(label = 'Cantrips', lines = 16, interactive=True, visible=False)
                 mon_cantrips_output.change(fn=update_visibility,
                                            inputs=[mon_cantrips_output],
@@ -353,27 +399,48 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                 mon_subtype_output.change(fn=update_visibility,
                                           inputs=[mon_subtype_output],
                                           outputs=[mon_subtype_output])                
-                mon_saving_throws_output = gr.Textbox(label = 'Saving Throws', lines = 1, interactive=True)
-                mon_skills_output = gr.Textbox(label = 'Skills', lines = 1, interactive=True)
-                mon_hp_output = gr.Textbox(label = 'Health Points', lines = 1, interactive=True)
-                mon_languages_output = gr.Textbox(label = 'Languages', lines = 1, interactive=True)
-                mon_xp_output = gr.Textbox(label = 'XP', lines = 1, interactive=True)
+                mon_saving_throws_output = gr.Textbox(label = 'Saving Throws', lines = 1, interactive=True, visible=False)
+                mon_saving_throws_output.change(fn=update_visibility,
+                                                    inputs=[mon_saving_throws_output],
+                                                    outputs=[mon_saving_throws_output])
+                mon_skills_output = gr.Textbox(label = 'Skills', lines = 1, interactive=True, visible=False)
+                mon_skills_output.change(fn=update_visibility,
+                                                    inputs=[mon_skills_output],
+                                                    outputs=[mon_skills_output])
+                mon_hp_output = gr.Textbox(label = 'Health Points', lines = 1, interactive=True, visible=False)
+                mon_hp_output.change(fn=update_visibility,
+                                                    inputs=[mon_hp_output],
+                                                    outputs=[mon_hp_output])
+                mon_languages_output = gr.Textbox(label = 'Languages', lines = 1, interactive=True, visible=False)
+                mon_languages_output.change(fn=update_visibility,
+                                                    inputs=[mon_languages_output],
+                                                    outputs=[mon_languages_output])
+                mon_xp_output = gr.Textbox(label = 'XP', lines = 1, interactive=True, visible=False)
+                mon_xp_output.change(fn=update_visibility,
+                                                    inputs=[mon_xp_output],
+                                                    outputs=[mon_xp_output])
                 mon_legendary_actions_output = gr.Textbox(label = 'Legendary Actions', lines = 16, interactive=True, visible = False) 
                 mon_legendary_actions_output.change(fn = update_visibility,
                    inputs =[mon_legendary_actions_output],
                    outputs=[mon_legendary_actions_output])
-            
-                
-                
-            
-            
-    
 
-        mon_sd_prompt_output = gr.Textbox(label = 'Image Generation Prompt', lines = 1, interactive=True)
+        mon_sd_prompt_output = gr.Textbox(label = 'Image Generation Prompt', lines = 1, interactive=True, visible=False)
+        mon_sd_prompt_output.change(fn=update_visibility,
+                                                    inputs=[mon_sd_prompt_output],
+                                                    outputs=[mon_sd_prompt_output])
+        image_gen_instructions =  """ ## Image Generation  \n
+    1. Review the text in the 'Image Generation Prompt' Textbox\n
+    2. Click 'Generate Statblock Art' \n
+    3. This will take 2 minutes for the first image, then about 10 seconds each. \n
+        ** *Additional generation will take about 10 seconds each, until the server goes to sleep ~3 minutes inactivity. \n
+    4. Click your favorite of the four images, this loads it for the page builder and 3d model generator.
+    """
+
+        gr.Markdown(image_gen_instructions)
 
         with gr.Row():
             with gr.Column():
-                image_gen = gr.Button(value = "Generate Art for the statblock" ) 
+                image_gen = gr.Button(value = "Generate Statblock Art" ) 
                 mon_image_gallery = gr.Gallery(label = "Generated Images",
                                         show_label = True,
                                         elem_id = "gallery",
@@ -390,8 +457,8 @@ This tool is a fun way to quickly generate Dungeons and Dragons monster manual s
                                         object_fit = "cover",
                                         height ="auto")
         model_gen_instructions = """## Generate a 3d model 
-Create a 3d model with texture using your selected image from the Generated Images Gallery \n
-1. Select your favorite image. 
+
+1. Make sure an image was clicked in the "Generated Images" gallery. 
 *Works best with images without thin qualities, like antenna \n
 2. Click Generate a 3d model button. 
 3. Wait about 30 seconds, then review and download as an .glb file.
@@ -415,74 +482,117 @@ Create a 3d model with texture using your selected image from the Generated Imag
         mon_image_gallery.select(fn = assign_img_path, outputs=selected_generated_image)
         mon_token_gallery.select(fn = assign_img_path, outputs=selected_token_image)
 
-    desc_gen.click(fn = gen_mon_desc, inputs = [user_mon_description,spells_checkbox, legendary_action_checkbox],
-                    outputs= [mon_name, mon_name_output,
-                                mon_size,mon_size_output,
-                                mon_type,mon_type_output,
-                                mon_subtype,mon_subtype_output,
-                                mon_alignment, mon_alignment_output,
-                                mon_armor_class, mon_armor_class_output,
-                                mon_hp, mon_hp_output,
-                                mon_hit_dice, mon_hit_dice_output,
-                                mon_speed, mon_speed_output,
-                                mon_abilities, mon_abilities_output,
-                                mon_saving_throws, mon_saving_throws_output,
-                                mon_skills, mon_skills_output,
-                                mon_damage_resistance, mon_damage_resistance_output,
-                                mon_senses, mon_senses_output,
-                                mon_languages, mon_languages_output,
-                                mon_challenge_rating, mon_challenge_rating_output,
-                                mon_xp, mon_xp_output,
-                                mon_actions, mon_actions_output,
-                                mon_cantrips,mon_cantrips_output,
-                                mon_spells, mon_spells_output,
-                                mon_spell_slots, mon_spell_slot_output,
-                                mon_legendary_actions, mon_legendary_actions_output,
-                                mon_description, mon_description_output,
-                                mon_sd_prompt,mon_sd_prompt_output 
-                                
-                                ])
-    
-   
+        desc_gen.click(fn = gen_mon_desc, inputs = [user_mon_description,spells_checkbox, legendary_action_checkbox],
+                        outputs= [mon_name, mon_name_output,
+                                    mon_size,mon_size_output,
+                                    mon_type,mon_type_output,
+                                    mon_subtype,mon_subtype_output,
+                                    mon_alignment, mon_alignment_output,
+                                    mon_armor_class, mon_armor_class_output,
+                                    mon_hp, mon_hp_output,
+                                    mon_hit_dice, mon_hit_dice_output,
+                                    mon_speed, mon_speed_output,
+                                    mon_abilities, mon_abilities_output,
+                                    mon_saving_throws, mon_saving_throws_output,
+                                    mon_skills, mon_skills_output,
+                                    mon_damage_resistance, mon_damage_resistance_output,
+                                    mon_senses, mon_senses_output,
+                                    mon_languages, mon_languages_output,
+                                    mon_challenge_rating, mon_challenge_rating_output,
+                                    mon_xp, mon_xp_output,
+                                    mon_actions, mon_actions_output,
+                                    mon_cantrips,mon_cantrips_output,
+                                    mon_spells, mon_spells_output,
+                                    mon_spell_slots, mon_spell_slot_output,
+                                    mon_legendary_actions, mon_legendary_actions_output,
+                                    mon_description, mon_description_output,
+                                    mon_sd_prompt,mon_sd_prompt_output 
+                                    
+                                    ])
         
-    # Build buttons to modify to html and show html 
-    gen_html = gr.Button(value = "Step 3 : Generate html")
-    html = gr.HTML(label="HTML preview", show_label=True)
-    gen_html.click(build_html_file,inputs =[
-                mon_name_output, 
-                mon_size_output,
-                mon_type_output,
-                mon_subtype_output,
-                mon_alignment_output,
-                mon_armor_class_output,
-                mon_hp_output,
-                mon_hit_dice_output,
-                mon_speed_output,
-                mon_abilities_output,
-                mon_saving_throws_output,
-                mon_skills_output,
-                mon_damage_resistance_output,
-                mon_senses_output,
-                mon_languages_output,
-                mon_challenge_rating_output,
-                mon_xp_output,
-                mon_actions_output,
-                mon_description_output,
-                selected_generated_image,
-                mon_cantrips_output,
-                mon_spells_output,
-                mon_spell_slot_output,
-                mon_legendary_actions_output,
-
-                ], 
-                outputs= html
-                )
     
-    base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where the script is located
-    print(f"Base Directory :",base_dir)
-    list_of_static_dir = [os.path.join(base_dir, "output"), 
-                        os.path.join(base_dir, "dependencies")] 
-    gr.set_static_paths(paths=list_of_static_dir)
+            
+        # Build buttons to modify to html and show html 
+        gen_html = gr.Button(value = "Step 3 : Generate html")
+        html = gr.HTML(label="HTML preview", show_label=True)
+        gen_html.click(build_html_file,inputs =[
+                    mon_name_output, 
+                    mon_size_output,
+                    mon_type_output,
+                    mon_subtype_output,
+                    mon_alignment_output,
+                    mon_armor_class_output,
+                    mon_hp_output,
+                    mon_hit_dice_output,
+                    mon_speed_output,
+                    mon_abilities_output,
+                    mon_saving_throws_output,
+                    mon_skills_output,
+                    mon_damage_resistance_output,
+                    mon_senses_output,
+                    mon_languages_output,
+                    mon_challenge_rating_output,
+                    mon_xp_output,
+                    mon_actions_output,
+                    mon_description_output,
+                    selected_generated_image,
+                    mon_cantrips_output,
+                    mon_spells_output,
+                    mon_spell_slot_output,
+                    mon_legendary_actions_output,
+
+                    ], 
+                    outputs= html
+                    )
+        
+    example_headers = ['## Statblock Examples',
+                           '## Token Examples',
+                           '## 3D Model Examples']   
+    with gr.Tab("Statblock Examples"):
+        
+        gr.Markdown(example_headers[0])
+    
+        examples = u.absolute_path("./galleries/examples/statblocks")
+       
+        example_gallery = gr.Gallery(label = "Statblock Examples",
+                                    show_label = True,
+                                    elem_id = "gallery",
+                                    columns =[4], rows =[1],
+                                    object_fit = "fill",
+                                    height = 768,                                       
+                                    value = examples)
+    with gr.Tab("Token Examples"):
+        example_headers = ['## Statblock Examples',
+                           '## Token Examples',
+                           '## 3D Model Examples']
+        gr.Markdown(example_headers[1])
+    
+        examples = u.absolute_path("./galleries/examples/tokens")
+        
+        example_gallery = gr.Gallery(label = "Token Examples",
+                                    show_label = True,
+                                    elem_id = "gallery",
+                                    columns =[4], rows =[1],
+                                    object_fit = "fill",
+                                    height = 768,                                       
+                                    value = examples)
+    with gr.Tab("3d Model Examples"):
+        example_headers = ['## Statblock Examples',
+                           '## Token Examples',
+                           '## 3D Model Examples']
+        gr.Markdown(example_headers[2])
+    
+        examples = u.absolute_path("./galleries/examples/models")
+        with gr.Row():
+            example_gallery = gr.Model3D(label = "3d Model Examples",
+                                        show_label = True,
+                                        
+                                                                             
+                                        value = examples[0])
+            example_gallery = gr.Model3D(label = "3d Model Examples",
+                                    show_label = True,
+                                                                        
+                                    value = examples[1])
     
     
     if __name__ == "__main__":

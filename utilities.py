@@ -89,6 +89,17 @@ def directory_contents(directory_path):
           return contents
     else : pass
 
+def absolute_path(directory_path):
+    path_list = []
+    if os.path.isdir(directory_path):
+        contents = os.listdir(directory_path)
+        for item in contents:
+            item_path = os.path.join(directory_path,item)
+            abs_path = os.path.abspath(item_path)
+            path_list.append(abs_path)
+    return path_list
+            
+            
 
 # Delete a list of file 
 def delete_files(file_paths):
