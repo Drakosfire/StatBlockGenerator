@@ -1,0 +1,60 @@
+body {
+    font-family: 'Libre Baskerville', serif;
+    background-color: #f9f6f1;
+    margin: 0;
+    padding: 0;
+}
+
+.stat-block {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 10px;
+}
+
+.stat-block h1, .stat-block h2 {
+    text-align: center;
+    color: #b33;
+    margin: 0;
+}
+
+.stat-block h1 {
+    font-size: 2em;
+}
+
+.stat-block h2 {
+    font-size: 1.5em;
+    margin-top: 10px;
+}
+
+.stat-section {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.stat-section div {
+    flex: 1;
+    padding: 10px;
+    margin: 5px;
+    background-color: #eee;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.stat-section div label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.stat-section div input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
