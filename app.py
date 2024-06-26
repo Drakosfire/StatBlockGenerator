@@ -21,7 +21,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory wher
 print(f"Base Directory :",base_dir)
 list_of_static_dir = [os.path.join(base_dir, "output"), 
                     os.path.join(base_dir, "dependencies"),
-                    os.path.join(base_dir, "galleries/examples/statblocks")] 
+                    os.path.join(base_dir, "galleries")] 
 gr.set_static_paths(paths=list_of_static_dir)
 
 style_css = custom_css = """
@@ -284,31 +284,38 @@ with gr.Blocks(css = "style.css") as demo:
            
 
     with gr.Tab("Instructions"):
+        image_path_list= u.absolute_path("./galleries/instructions")
+        
         gr.HTML(""" <div id="inner"> <header>
                 <h1>Monster Statblock Generator</h1>
-                <p>
-                With this AI driven tool you will build a collectible style card of a fantasy flavored item with details.
-                </p>
+               
                 </div>""")
         
-        markdown_instructions = """## How It Works
-    This tool is a fun way to quickly generate Dungeons and Dragons monster manual style statblocks with art and a token for a Virtual Table Top. \n
-    1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
-        a. Include as much or as little information as you'd like. \n
-        b. Just a name : The Flavor Lich \n
-        c. A bit of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich \n
-        d. Lots of detail : A friendly skeletal lich who is a master of flavor, called The Flavor Lich, the Lich is Challenge Rating 8 and is a 4th level spell caster whose spells are all about food. \n
-    2. The results will populate below in editable fields that are saved on edit. \n
-    3. Review the results, make any changes you'd like. \n
-    ## The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image. \n
-    \n
-    **Image and Text Generation**: Now you can generate 4 images for the statblock page without text and pick your favorite. \n
-    4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
-    5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
-    6. Last, you can generate a token or figure of your creature or a 3d model to download. \n
-    """
-        gr.Markdown(markdown_instructions)
+        md_instructions_header = """## How It Works:
+        \n This tool is a fun way to quickly generate Dungeons and Dragons style statblocks with art. \n
+        ** If you are new, expore the tabs above, look at some examples ** """
+        gr.Markdown(md_instructions_header)
+        md_img_0 =f"""/file={image_path_list[0]} """
+        md_instructions_1="""1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
+            **Include as much or as little information as you'd like.** \n """
+        gr.Markdown(md_instructions_1)
+        gr.Image(value=md_img_0, show_label=False)
+
+        md_instructions_2 = """ 2. The results will populate below in editable fields that are saved on edit. \n
+        3. Review the results, make any changes you'd like. \n """
+        gr.Markdown(md_instructions_2)
+        md_img_1 =f"""/file={image_path_list[1]} """
+        gr.Image(value=md_img_1, show_label=False)
         
+        md_instructions_3="""## Image and Text Generation: 
+        Now generate 4 images for the statblock page without text and pick your favorite. 
+        **The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image.** \n
+        4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
+        5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
+        6. Last, you can generate a token or figure of your creature or a 3d model to download. \n """
+        gr.Markdown(md_instructions_3)
+        md_img_2 =f"""/file={image_path_list[2]} """
+        gr.Image(value=md_img_1, show_label=False)
               
 
         

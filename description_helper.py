@@ -1,10 +1,8 @@
-import replicate
 import ast
 import gc
 import os
 from openai import OpenAI
 
-api_key = os.getenv('REPLICATE_API_TOKEN')
 client = OpenAI()
 
 def load_llm(user_input, spellcaster, legendary_actions ):
@@ -19,7 +17,7 @@ def load_llm(user_input, spellcaster, legendary_actions ):
                         }
                     ],
                     temperature=1,
-                    max_tokens=2000,
+                    max_tokens=3000,
                     top_p=1,
                     frequency_penalty=0,
                     presence_penalty=0
@@ -27,32 +25,15 @@ def load_llm(user_input, spellcaster, legendary_actions ):
     
     return response.choices[0].message.content
 
-model_path = "meta/meta-llama-3-70b-instruct"
-#def load_llm(user_input, spellcaster, legendary_actions):
- # prompt = f"the subject is {user_input}, Spellcaster : {spellcaster}, Legendary Actions : {legendary_actions}"
-  #input = {"prompt" : f" {prompt_instructions} {prompt}","max_tokens":2000}
-  #print(f"Generation Started, \n Prompt = {prompt}")
-  #output = replicate.run(model_path,
-  #input=input
-  
-   # )
-  #return output
-  
-
 def call_llm_and_cleanup(user_input,spellcaster, legendary_actions):
     # Call the LLM and store its output
     llm_output = load_llm(user_input, spellcaster, legendary_actions)
     llm_output = "".join(llm_output)
     print(llm_output)
     llm_output = ast.literal_eval(llm_output)
-    
-
     gc.collect()
-  
-    # llm_output is still available for use here
-    
+    # llm_output is still available for use here    
     return llm_output
-
   
 def convert_to_dict(string):
     # Check if the input is already a dictionary

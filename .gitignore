@@ -10,7 +10,7 @@ Dockerfile copy
 Dockerfile Master copy
 
 # File type to ignore
-*.glb
+
 
 # Specific File
 temp_image.jpg
