@@ -281,49 +281,65 @@ with gr.Blocks(css = "style.css") as demo:
         iframe = iframe = f"""<iframe src="file={mon_file_path}" width="100%" height="500px"></iframe>"""
         link = f'<a href="file={mon_file_path}" target="_blank">{u.file_name_list[1] +".html"}</a>'
         return iframe
+    # Function to convert HTML to PDF and provide download link
+    def convert_html_to_pdf(html_content):
+        import pdfkit
+        import uuid
+        import os
+        
+        # Generate a unique filename
+        pdf_filename = f"statblock_{uuid.uuid4()}.pdf"
+        pdf_filepath = os.path.join("pdf_output", pdf_filename)
+        
+        # Convert HTML to PDF
+        pdfkit.from_string(html_content, pdf_filepath)
+        
+        # Return the path to the PDF for download
+        return f"/file={pdf_filepath}"
            
 
     with gr.Tab("Instructions"):
         image_path_list= u.absolute_path("./galleries/instructions")
+        try:
+            md_img_0 = f"""/file={image_path_list[0]} """
+            md_img_1 =f"""/file={image_path_list[1]} """
+            md_img_2 =f"""/file={image_path_list[2]} """
+        except IndexError:
+            # Handle the case where the list is empty
+            md_img_0 = "No images found."
+            md_img_1 = "No images found."
+            md_img_2 = "No images found."
         
         gr.HTML(""" <div id="inner"> <header>
                 <h1>Monster Statblock Generator</h1>
                
                 </div>""")
         
-        md_instructions_header = """## How It Works:
-        \n This tool is a fun way to quickly generate Dungeons and Dragons style statblocks with art. \n
-        ** If you are new, expore the tabs above, look at some examples ** """
+        md_instructions_header = """## How It Works:"""       
         gr.Markdown(md_instructions_header)
-        md_img_0 =f"""/file={image_path_list[0]} """
-        md_instructions_1="""1. Your intitial text along with the prompt is sent to GPT 4o to generate all the values for a Dungeons and Dragons creature. \n
-            **Include as much or as little information as you'd like.** \n """
+        
+        md_instructions_1=""" **Include as much or as little information as you'd like.** """
         gr.Markdown(md_instructions_1)
         gr.Image(value=md_img_0, show_label=False)
-
-        md_instructions_2 = """ 2. The results will populate below in editable fields that are saved on edit. \n
-        3. Review the results, make any changes you'd like. \n """
-        gr.Markdown(md_instructions_2)
-        md_img_1 =f"""/file={image_path_list[1]} """
+        
         gr.Image(value=md_img_1, show_label=False)
         
-        md_instructions_3="""## Image and Text Generation: 
+        md_instructions_2="""## Image and Text Generation: 
         Now generate 4 images for the statblock page without text and pick your favorite. 
         **The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image.** \n
-        4. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
-        5. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
-        6. Last, you can generate a token or figure of your creature or a 3d model to download. \n """
-        gr.Markdown(md_instructions_3)
-        md_img_2 =f"""/file={image_path_list[2]} """
-        gr.Image(value=md_img_1, show_label=False)
-              
+        1. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
+        2. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
+        3. Last, you can generate a token or figure of your creature or a 3d model to download. \n """
 
+        gr.Markdown(md_instructions_2)
+        
+        gr.Image(value=md_img_2, show_label=False)
         
     with gr.Tab("Generator"):
                     
         with gr.Row():
             with gr.Column():
-                user_mon_description = gr.Textbox(label = "Step 1 : Write a description and give a name or type to your creation!",
+                user_mon_description = gr.Textbox(label = "Write a description and give a name or type to your creation!",
                                                 lines = 1, placeholder=f"Ex : A friendly skeletal lich who is a master of flavor, called The Flavor Lich",
                                                 
                                                 elem_id= "custom-textbox")
@@ -431,7 +447,7 @@ with gr.Blocks(css = "style.css") as demo:
                    inputs =[mon_legendary_actions_output],
                    outputs=[mon_legendary_actions_output])
 
-        mon_sd_prompt_output = gr.Textbox(label = 'Image Generation Prompt', lines = 1, interactive=True, visible=False)
+        mon_sd_prompt_output = gr.Textbox(label = 'Image Generation Prompt', lines = 1, interactive=True, visible=True)
         mon_sd_prompt_output.change(fn=update_visibility,
                                                     inputs=[mon_sd_prompt_output],
                                                     outputs=[mon_sd_prompt_output])
@@ -476,11 +492,6 @@ with gr.Blocks(css = "style.css") as demo:
         mon_model_gallery = gr.Model3D(label = "3D Model Display",
                                         elem_id = "model_gallery",
                                               )
-
-                    
-                    
-
-           
         
         image_gen.click(generate_image_update_gallery, inputs = [mon_sd_prompt_output,mon_name], outputs = mon_image_gallery)
         token_gen.click(generate_token_update_gallery, inputs = [mon_sd_prompt_output,mon_name], outputs = mon_token_gallery)
@@ -520,37 +531,50 @@ with gr.Blocks(css = "style.css") as demo:
     
             
         # Build buttons to modify to html and show html 
-        gen_html = gr.Button(value = "Step 3 : Generate html")
-        html = gr.HTML(label="HTML preview", show_label=True)
-        gen_html.click(build_html_file,inputs =[
-                    mon_name_output, 
-                    mon_size_output,
-                    mon_type_output,
-                    mon_subtype_output,
-                    mon_alignment_output,
-                    mon_armor_class_output,
-                    mon_hp_output,
-                    mon_hit_dice_output,
-                    mon_speed_output,
-                    mon_abilities_output,
-                    mon_saving_throws_output,
-                    mon_skills_output,
-                    mon_damage_resistance_output,
-                    mon_senses_output,
-                    mon_languages_output,
-                    mon_challenge_rating_output,
-                    mon_xp_output,
-                    mon_actions_output,
-                    mon_description_output,
-                    selected_generated_image,
-                    mon_cantrips_output,
-                    mon_spells_output,
-                    mon_spell_slot_output,
-                    mon_legendary_actions_output,
+        
+        
+        with gr.Row():
+            with gr.Column():
+                gen_html = gr.Button(value = "Step 3 : Generate html")
+                html = gr.HTML(label="HTML preview", show_label=True)
+            with gr.Column():
+                pdf_output = gr.HTML()
+                download_btn = gr.Button("Download PDF")
+            gen_html.click(build_html_file,inputs =[
+                        mon_name_output, 
+                        mon_size_output,
+                        mon_type_output,
+                        mon_subtype_output,
+                        mon_alignment_output,
+                        mon_armor_class_output,
+                        mon_hp_output,
+                        mon_hit_dice_output,
+                        mon_speed_output,
+                        mon_abilities_output,
+                        mon_saving_throws_output,
+                        mon_skills_output,
+                        mon_damage_resistance_output,
+                        mon_senses_output,
+                        mon_languages_output,
+                        mon_challenge_rating_output,
+                        mon_xp_output,
+                        mon_actions_output,
+                        mon_description_output,
+                        selected_generated_image,
+                        mon_cantrips_output,
+                        mon_spells_output,
+                        mon_spell_slot_output,
+                        mon_legendary_actions_output,
 
-                    ], 
-                    outputs= html
-                    )
+                        ], 
+                        outputs= html
+                        )
+            download_btn.click(
+                fn=convert_html_to_pdf,
+                inputs=[html],
+                outputs=pdf_output
+    )
+    
         
     example_headers = ['## Statblock Examples',
                            '## Token Examples',
