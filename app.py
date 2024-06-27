@@ -593,8 +593,6 @@ with gr.Blocks(css = "style.css") as demo:
         with gr.Row():
             example_gallery = gr.Model3D(label = "3d Model Examples",
                                         show_label = True,
-                                        
-                                                                             
                                         value = examples[0])
             example_gallery = gr.Model3D(label = "3d Model Examples",
                                     show_label = True,
