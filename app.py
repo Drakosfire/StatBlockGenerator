@@ -8,6 +8,8 @@ import process_text
 import os
 import ctypes
 import tripo3d as tripo3d
+import uuid
+from weasyprint import HTML
 
 # This is a fix for the way that python doesn't release system memory back to the OS and it was leading to locking up the system
 libc = ctypes.cdll.LoadLibrary("libc.so.6")
@@ -281,23 +283,7 @@ with gr.Blocks(css = "style.css") as demo:
         iframe = iframe = f"""<iframe src="file={mon_file_path}" width="100%" height="500px"></iframe>"""
         link = f'<a href="file={mon_file_path}" target="_blank">{u.file_name_list[1] +".html"}</a>'
         return iframe
-    # Function to convert HTML to PDF and provide download link
-    def convert_html_to_pdf(html_content):
-        import pdfkit
-        import uuid
-        import os
-        
-        # Generate a unique filename
-        pdf_filename = f"statblock_{uuid.uuid4()}.pdf"
-        pdf_filepath = os.path.join("pdf_output", pdf_filename)
-        
-        # Convert HTML to PDF
-        pdfkit.from_string(html_content, pdf_filepath)
-        
-        # Return the path to the PDF for download
-        return f"/file={pdf_filepath}"
-           
-
+  
     with gr.Tab("Instructions"):
         image_path_list= u.absolute_path("./galleries/instructions")
         try:
@@ -324,9 +310,9 @@ with gr.Blocks(css = "style.css") as demo:
         
         gr.Image(value=md_img_1, show_label=False)
         
-        md_instructions_2="""## Image and Text Generation: 
-        Now generate 4 images for the statblock page without text and pick your favorite. 
-        **The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image.** \n
+        md_instructions_2="""## Image Generation: 
+        ** The first image generation take about 2 minutes to 'warm up' after that it's ~10s per image. ** \n
+                
         1. Click 'Generate Statblock Art' and wait for the images to generate, then select the one you'd like to use. \n
         2. Click 'Generate HTML' to generate a webpage that can be saved or printed as PDF. \n
         3. Last, you can generate a token or figure of your creature or a 3d model to download. \n """
@@ -537,9 +523,6 @@ with gr.Blocks(css = "style.css") as demo:
             with gr.Column():
                 gen_html = gr.Button(value = "Step 3 : Generate html")
                 html = gr.HTML(label="HTML preview", show_label=True)
-            with gr.Column():
-                pdf_output = gr.HTML()
-                download_btn = gr.Button("Download PDF")
             gen_html.click(build_html_file,inputs =[
                         mon_name_output, 
                         mon_size_output,
@@ -569,13 +552,7 @@ with gr.Blocks(css = "style.css") as demo:
                         ], 
                         outputs= html
                         )
-            download_btn.click(
-                fn=convert_html_to_pdf,
-                inputs=[html],
-                outputs=pdf_output
-    )
-    
-        
+           
     example_headers = ['## Statblock Examples',
                            '## Token Examples',
                            '## 3D Model Examples']   
