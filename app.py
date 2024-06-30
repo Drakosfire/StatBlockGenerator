@@ -9,7 +9,7 @@ import os
 import ctypes
 import tripo3d as tripo3d
 import uuid
-from weasyprint import HTML
+
 
 # This is a fix for the way that python doesn't release system memory back to the OS and it was leading to locking up the system
 libc = ctypes.cdll.LoadLibrary("libc.so.6")
