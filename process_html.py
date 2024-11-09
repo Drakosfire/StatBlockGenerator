@@ -168,11 +168,7 @@ def build_html_base(
     with open(mon_file_path, 'w') as clean_html:
         clean_html.write(html_file_as_text)
     clean_html.close()
-    # Clear link list and append with new entries
-    del u.link_list[:]
-    u.link_list.append(u.file_name_list[0]+'/' + u.file_name_list[1] +'.html')
-    u.link_list.append(mon_type)
-    
+     
     #Passing back a file path that Gradio can access and is local
     return mon_file_path
 

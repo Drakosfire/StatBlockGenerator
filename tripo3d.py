@@ -41,6 +41,7 @@ def create_image_to_model_task(image_token):
     url = f"{BASE_URL}/task"
     payload = {
         "type": "image_to_model",
+        "model_version": "v2.0-20240919",
         "file": {
             "type": "png",  # Adjust this based on the actual file type
             "file_token": image_token
@@ -100,8 +101,10 @@ def process_image(image_url):
             print(f"Task Status: {status}, Progress: {progress}%")
             
             if status == "success":
+                print(f"status response: {status_response}")
                 output = status_response['data']['output']
-                model_url = output['model']  # Assuming 'model' key contains the URL
+                print(f"output: {output}")
+                model_url = output['pbr_model']  # Assuming 'model' key contains the URL
 
                 # Step 4: Download the .glb file
                 local_filename = f"{task_id}.glb"

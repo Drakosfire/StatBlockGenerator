@@ -19,21 +19,14 @@ M_MMAP_THRESHOLD = -3
 libc.mallopt(M_MMAP_THRESHOLD, 2**20)
 
 # Declare accessible directories
-base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where the script is located
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where app.py <script>
+        
 print(f"Base Directory :",base_dir)
 list_of_static_dir = [os.path.join(base_dir, "output"), 
                     os.path.join(base_dir, "dependencies"),
                     os.path.join(base_dir, "galleries")] 
 gr.set_static_paths(paths=list_of_static_dir)
 
-style_css = custom_css = """
-<link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/all.css' rel='stylesheet' />
-<link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/css.css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css' />
-<link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/bundle.css' rel='stylesheet' />
-<link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/style.css' rel='stylesheet' />
-<link href='file=/media/drakosfire/Shared/Docker/StatblockGenerator/dependencies/5ePHBstyle.css' rel='stylesheet' />
-"""
-    
 # Build gradio app   
 
 with gr.Blocks(css = "style.css") as demo:
@@ -181,14 +174,8 @@ with gr.Blocks(css = "style.css") as demo:
     def generate_image_update_gallery(image_prompt,image_name, token = False):        
         delete_temp_images()
         print(f"sd_prompt is a {type(image_prompt)}")
-        image_list = []
-        
-        num_img = 4
-        for x in range(num_img):
-            preview = sd.preview_and_generate_image(image_name, image_prompt,token)
-            image_list.append(preview)
-            yield image_list
-        del preview
+
+        image_list = sd.preview_and_generate_image(image_name, image_prompt,token)
         
         return image_list
     
@@ -263,9 +250,8 @@ with gr.Blocks(css = "style.css") as demo:
                         mon_spells_output,
                         mon_spell_slot_output,
                         mon_legendary_actions_output,
-                                              
-                        
                         )
+        
         mon_file_path = u.file_name_list[0]+'/' + u.file_name_list[1] +'.html'
         if not os.path.exists(mon_file_path):
             print(f"{mon_file_path} not found")
@@ -273,17 +259,7 @@ with gr.Blocks(css = "style.css") as demo:
         iframe = iframe = f"""<iframe src="file={mon_file_path}" width="100%" height="500px"></iframe>"""
         
         return iframe
-    
-        # Build the html and file path to pass to gradio to output html file in gr.html 
-    def gen_link():
-        mon_file_path = u.file_name_list[0]+'/' + u.file_name_list[1] +'.html'
-        if not os.path.exists(mon_file_path):
-            print(f"{mon_file_path} not found")
-        else: print(f"{mon_file_path} found")
-        iframe = iframe = f"""<iframe src="file={mon_file_path}" width="100%" height="500px"></iframe>"""
-        link = f'<a href="file={mon_file_path}" target="_blank">{u.file_name_list[1] +".html"}</a>'
-        return iframe
-  
+     
     with gr.Tab("Instructions"):
         image_path_list= u.absolute_path("./galleries/instructions")
         try:
@@ -438,7 +414,7 @@ with gr.Blocks(css = "style.css") as demo:
                                                     inputs=[mon_sd_prompt_output],
                                                     outputs=[mon_sd_prompt_output])
         image_gen_instructions =  """ ## Image Generation  \n
-    1. Review the text in the 'Image Generation Prompt' Textbox\n
+    1. Review the text in the 'Image Generation Prompt' Textbox -or- Upload your own image \n
     2. Click 'Generate Statblock Art' \n
     3. This will take 2 minutes for the first image, then about 10 seconds each. \n
         ** *Additional generation will take about 10 seconds each, until the server goes to sleep ~3 minutes inactivity. \n
@@ -455,7 +431,8 @@ with gr.Blocks(css = "style.css") as demo:
                                         elem_id = "gallery",
                                         columns =[4], rows =[1],
                                         object_fit = "cover",
-                                        height ="auto")
+                                        height ="auto",
+                                        interactive = True)
               
             with gr.Column(): 
                 token_gen = gr.Button(value = "Generate Token Image" ) 
